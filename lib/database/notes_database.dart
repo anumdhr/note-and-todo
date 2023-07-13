@@ -51,4 +51,15 @@ class DatabaseService {
       whereArgs: [id],
     );
   }
+
+  update(NotesModel notesModel) async {
+    final db = await connectDb();
+    await db.update(
+      'tableNote',
+      notesModel.toMap(),
+      where: 'id = ?',
+      whereArgs: [notesModel.id],
+    );
+  }
+
 }

@@ -60,11 +60,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        children: [
-                          Text(notesModel[index].title),
-                          Text(notesModel[index].description),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          buildShowModalBottomSheet(
+                            notesModels: notesModel[index],
+                            context,
+                            titleController: titleController,
+                            descriptionController: descriptionController,
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Text(notesModel[index].title),
+                            Text(notesModel[index].description),
+                          ],
+                        ),
                       ),
                       IconButton(
                         onPressed: () async {
@@ -86,48 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                child: Column(
-                  children: [
-                    TextFields(
-                      hintText: "Title",
-                      maxLines: 1,
-                      controller: titleController,
-                    ),
-                    TextFields(
-                      hintText: "Description",
-                      maxLines: 10,
-                      controller: descriptionController,
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        padding: const MaterialStatePropertyAll(EdgeInsets.symmetric(
-                          horizontal: 50,
-                          vertical: 5,
-                        )),
-                        backgroundColor: MaterialStateColor.resolveWith((states) => Colors.grey),
-                      ),
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        await DatabaseService().create(NotesModel(title: titleController.text, description: descriptionController.text));
-                        await refreshNote();
-                        print(notesModel.length);
-                      },
-                      child: const Text(
-                        "Enter",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+          buildShowModalBottomSheet(
+            context,
+            descriptionController: descriptionController,
+            titleController: titleController,
           );
         },
         child: const Icon(
@@ -137,10 +109,85 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Future<dynamic> buildShowModalBottomSheet(
+    BuildContext context, {
+    required TextEditingController titleController,
+    required TextEditingController descriptionController,
+    NotesModel? notesModels,
+  }) {
+    titleController.text = notesModels?.title ?? '';
+    descriptionController.text = notesModels?.description ?? '';
+
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+          child: Column(
+            children: [
+              TextFields(
+                hintText: "Title",
+                maxLines: 1,
+                controller: titleController,
+              ),
+              TextFields(
+                hintText: "Description",
+                maxLines: 10,
+                controller: descriptionController,
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  padding: const MaterialStatePropertyAll(EdgeInsets.symmetric(
+                    horizontal: 50,
+                    vertical: 5,
+                  )),
+                  backgroundColor: MaterialStateColor.resolveWith((states) => Colors.grey),
+                ),
+                onPressed: () async {
+                  if (titleController.text.isNotEmpty && descriptionController.text.isNotEmpty) {
+                    if (notesModels != null) {
+                      // Update an existing note
+                      await DatabaseService().update(NotesModel(
+                        id: notesModels.id,
+                        title: titleController.text,
+                        description: descriptionController.text,
+                      ));
+                    } else {
+                      // Create a new note
+                      await DatabaseService().create(NotesModel(
+                        title: titleController.text,
+                        description: descriptionController.text,
+                      ));
+                    }
+                    await refreshNote();
+                    titleController.clear();
+                    descriptionController.clear();
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text(
+                  "Enter",
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
 class TextFields extends StatelessWidget {
-  const TextFields({super.key, required this.hintText, required this.maxLines, required this.controller});
+  const TextFields({
+    super.key,
+    required this.hintText,
+    required this.maxLines,
+    required this.controller,
+  });
 
   final String hintText;
   final int maxLines;
