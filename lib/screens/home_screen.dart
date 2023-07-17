@@ -1,7 +1,7 @@
 import 'package:anunoteapp/database/notes_database.dart';
 import 'package:anunoteapp/models/notes_model.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../common_widgets.dart';
 
@@ -35,65 +35,73 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     print(notesModel.length);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Note App",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.separated(
-              separatorBuilder: (context, index) => const Divider(),
-              shrinkWrap: true,
-              itemCount: notesModel.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          buildShowModalBottomSheet(
-                            notesModels: notesModel[index],
-                            context,
-                            titleController: titleController,
-                            descriptionController: descriptionController,
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Text(notesModel[index].title),
-                            Text(notesModel[index].description),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            DatabaseService().delete(notesModel[index].id!);
-                          });
-                          await refreshNote();
-                        },
-                        icon: const Icon(Icons.delete),
-                      ),
-                    ],
-                  ),
-                );
-              },
+      body: ListView.builder(
+        shrinkWrap: true,
+        itemCount: notesModel.length,
+        itemBuilder: (context, index) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.brown,
             ),
-          )
-        ],
+            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      buildShowModalBottomSheet(
+                        notesModels: notesModel[index],
+                        context,
+                        titleController: titleController,
+                        descriptionController: descriptionController,
+                      );
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          notesModel[index].title,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.lato(
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          notesModel[index].description,
+                          maxLines: 3,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.lato(
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    setState(() {
+                      DatabaseService().delete(notesModel[index].id!);
+                    });
+                    await refreshNote();
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
@@ -168,10 +176,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text(
+                child: Text(
                   "Enter",
-                  style: TextStyle(
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
                     color: Colors.black,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -182,4 +193,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

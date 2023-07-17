@@ -1,6 +1,7 @@
 import 'package:anunoteapp/common_widgets.dart';
 import 'package:anunoteapp/todo/database/todo_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../models/models.dart';
 
@@ -11,22 +12,23 @@ class Todo extends StatefulWidget {
   State<Todo> createState() => _TodoState();
 }
 
-
 class _TodoState extends State<Todo> {
   List<TodoModel> todoModel = [];
   final TextEditingController todoController = TextEditingController();
-@override
-  void initState() {
 
+  @override
+  void initState() {
     super.initState();
     refreshedNote();
   }
-  Future refreshedNote() async{
-  List<TodoModel> updateTodoModel = await DatabaseServices().readNote();
-  setState(() {
-    todoModel = updateTodoModel;
-  });
+
+  Future refreshedNote() async {
+    List<TodoModel> updateTodoModel = await DatabaseServices().readNote();
+    setState(() {
+      todoModel = updateTodoModel;
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     print(todoModel.length);
@@ -38,11 +40,15 @@ class _TodoState extends State<Todo> {
             itemCount: todoModel.length,
             itemBuilder: (context, index) {
               return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.brown,
+                ),
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 15),
-                margin: EdgeInsets.symmetric(horizontal: 5, vertical: 15),
-                color: Colors.brown,
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: ListTile(
                   leading: Checkbox(
+                    activeColor: Colors.black,
                     value: todoModel[index].isChecked,
                     onChanged: (bool? value) async {
                       setState(() {
@@ -52,15 +58,20 @@ class _TodoState extends State<Todo> {
                       await DatabaseServices().update(todoModel[index]);
                     },
                   ),
-                  title: Text(todoModel[index].title),
+                  title: Text(todoModel[index].title,
+                      style: GoogleFonts.lato(
+                        fontSize: 18,
+                        color: Colors.black,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w500,
+                      )),
                   trailing: IconButton(
-                      onPressed: ()async {
+                      onPressed: () async {
                         setState(() {
                           // todoModel.removeAt(index);
-                           DatabaseServices().delete(todoModel[index].id!);
+                          DatabaseServices().delete(todoModel[index].id!);
                         });
                         await refreshedNote();
-
                       },
                       icon: Icon(Icons.delete)),
                 ),
@@ -70,22 +81,25 @@ class _TodoState extends State<Todo> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.black,
         onPressed: () {
           showModalBottomSheet(
             context: context,
             builder: (context) {
               return Container(
-                color: Colors.purpleAccent,
+                color: Colors.white,
                 child: Column(
                   children: [
                     TextFields(hintText: "Enter here", maxLines: 5, controller: todoController),
+                    SizedBox(
+                      height: 10,
+                    ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.all(15),
                         backgroundColor: Colors.deepPurpleAccent,
                       ),
-                      onPressed: () async{
+                      onPressed: () async {
                         setState(() {
                           DatabaseServices().create(TodoModel(title: todoController.text, isChecked: false));
                           // todoModel.add(TodoModel(title: todoController.text,));
@@ -94,7 +108,13 @@ class _TodoState extends State<Todo> {
                         });
                         await refreshedNote();
                       },
-                      child: Text("Enter"),
+                      child: Text("Enter",
+                          style: GoogleFonts.lato(
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w500,
+                          )),
                     ),
                   ],
                 ),
@@ -104,7 +124,7 @@ class _TodoState extends State<Todo> {
         },
         child: Icon(
           Icons.add,
-          color: Colors.black87,
+          color: Colors.green,
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:anunoteapp/database/notes_database.dart';
 import 'package:anunoteapp/screens/home_screen.dart';
+import 'package:anunoteapp/screens/main_screen.dart';
 import 'package:anunoteapp/todo/database/todo_database.dart';
 import 'package:anunoteapp/todo/screens/todo_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Todo(),
+      home: MainScreen(),
     );
   }
 }
