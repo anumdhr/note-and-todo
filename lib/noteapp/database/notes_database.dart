@@ -1,6 +1,7 @@
-import 'package:anunoteapp/models/notes_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+
+import '../models/notes_model.dart';
 
 class DatabaseService {
   Future<Database> connectDb() async {
@@ -43,13 +44,14 @@ class DatabaseService {
     );
   }
 
-  delete(int id) async {
+  Future<List<NotesModel>>delete(int id) async {
     final db = await DatabaseService().connectDb();
     await db.delete(
       'tableNote',
       where: 'id = ?',
       whereArgs: [id],
     );
+    return readNote();
   }
 
   update(NotesModel notesModel) async {
@@ -61,5 +63,4 @@ class DatabaseService {
       whereArgs: [notesModel.id],
     );
   }
-
 }

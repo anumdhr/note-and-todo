@@ -1,4 +1,3 @@
-import 'package:anunoteapp/models/notes_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -18,11 +17,10 @@ class DatabaseServices {
         await db.execute("PRAGMA foreign_keys = ON");
       },
     );
-    if(database != null){
+    if (database != null) {
       print('Database connected successfully');
       return database;
-    }
-    else{
+    } else {
       print('Database not connected');
       return database;
     }
@@ -39,12 +37,12 @@ class DatabaseServices {
 
   Future<List<TodoModel>> readNote() async {
     final db = await DatabaseServices().connectDb();
-    var dbRead = await db.query('tableTodos',
-
+    var dbRead = await db.query(
+      'tableTodos',
     );
     return List.generate(
       dbRead.length,
-          (index) {
+      (index) {
         return TodoModel(
           title: dbRead[index]['title'] as String,
           isChecked: dbRead[index]['isChecked'] == 1 ? true : false,
@@ -54,23 +52,24 @@ class DatabaseServices {
     );
   }
 
-  delete(int id) async {
+  Future<List<TodoModel>>delete(int id) async {
     final db = await DatabaseServices().connectDb();
     await db.delete(
       'tableTodos',
       where: 'id = ?',
       whereArgs: [id],
     );
+    return readNote();
   }
 
-  update(TodoModel todoModel) async {
-    final db = await connectDb();
+  Future<List<TodoModel>> update(TodoModel todo) async {
+    final db = await DatabaseServices().connectDb();
     await db.update(
       'tableTodos',
-      todoModel.toMap(),
+      todo.toMap(),
       where: 'id = ?',
-      whereArgs: [todoModel.id],
+      whereArgs: [todo.id],
     );
+    return readNote();
   }
-
 }
