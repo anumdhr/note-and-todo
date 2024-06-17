@@ -32,15 +32,22 @@ class NoteAppBloc extends Cubit<List<NotesModel>> {
     List<NotesModel> notesModel = await DatabaseService().delete(id);
     await refreshNote();
     emit(notesModel);
+
+  }
+  searchNotes(String query) {
+    if (query.isEmpty) {
+      refreshNote(); // Restore the original list of notes
+    } else {
+      final filteredNotes = state.where((note) {
+        final titleLower = note.title.toLowerCase();
+        final descriptionLower = note.description.toLowerCase();
+        final searchLower = query.toLowerCase();
+
+        return titleLower.contains(searchLower) || descriptionLower.contains(searchLower);
+      }).toList();
+
+      emit(filteredNotes);
+    }
   }
 }
-// NotesModel(
-// title: titleController.text,
-// description: descriptionController.text,
-// )
 
-// await DatabaseService().update(NotesModel(
-// id: notesModels.id,
-// title: titleController.text,
-// description: descriptionController.text,
-// ));

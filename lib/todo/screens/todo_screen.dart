@@ -7,14 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../models/models.dart';
 
-class Todo extends StatefulWidget {
-  const Todo({super.key});
+class TodoPage extends StatefulWidget {
+  const TodoPage({super.key});
 
   @override
-  State<Todo> createState() => _TodoState();
+  State<TodoPage> createState() => _TodoPageState();
 }
 
-class _TodoState extends State<Todo> {
+class _TodoPageState extends State<TodoPage> {
   List<TodoModel> todoModel = [];
   final TextEditingController todoController = TextEditingController();
 

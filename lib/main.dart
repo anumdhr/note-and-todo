@@ -24,7 +24,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => TodoBloc(),
         ),
-        BlocProvider(create: (context) => NoteAppBloc(),),
+        BlocProvider(
+          create: (context) => NoteAppBloc(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
